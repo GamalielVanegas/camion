@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "747977926935",
+    "project_id": "camiontracker-32a8f",
+    "storage_bucket": "camiontracker-32a8f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:747977926935:android:4a5eae4688358c81d76f52",
+        "android_client_info": {
+          "package_name": "com.gammadesv.camiontracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbXzfEI4P4C0JrWUM1GYDpm0QhH3EFgXA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
