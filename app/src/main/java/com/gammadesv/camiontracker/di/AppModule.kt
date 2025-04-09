@@ -17,15 +17,22 @@ import javax.inject.Singleton
 object AppModule {
     @Provides
     @Singleton
-    fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+    fun provideFirebaseAuth(): FirebaseAuth = Firebase.auth
 
     @Provides
     @Singleton
-    fun provideFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
-
-    @Provides
-    @Singleton
-    fun provideFusedLocationClient(@ApplicationContext context: Context): FusedLocationProviderClient {
-        return LocationServices.getFusedLocationProviderClient(context)
+    fun provideFirestore(): FirebaseFirestore {
+        val firestore = Firebase.firestore
+        firestore.firestoreSettings = FirebaseFirestoreSettings.Builder()
+            .setPersistenceEnabled(true)
+            .build()
+        return firestore
     }
+
+    @Provides
+    @Singleton
+    fun provideAuthRepository(
+        auth: FirebaseAuth,
+        firestore: FirebaseFirestore
+    ): AuthRepository = AuthRepository(auth, firestore)
 }

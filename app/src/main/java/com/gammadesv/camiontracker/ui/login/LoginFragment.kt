@@ -1,15 +1,3 @@
-package com.gammadesv.camiontracker.ui.login
-
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import com.gammadesv.camiontracker.databinding.FragmentLoginBinding
-import dagger.hilt.android.AndroidEntryPoint
-
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
@@ -29,29 +17,31 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnLogin.setOnClickListener {
-            val employeeCode = binding.etEmployeeCode.text.toString().trim()
-            val password = binding.etPassword.text.toString().trim()
+            val email = binding.etEmail.text?.toString()?.trim()
+            val password = binding.etPassword.text?.toString()?.trim()
 
-            if (validateInputs(employeeCode, password)) {
-                viewModel.login(employeeCode, password)
+            if (!email.isNullOrEmpty() && !password.isNullOrEmpty()) {
+                viewModel.login(email, password)
+            } else {
+                showError("Ingrese email y contraseña")
+            }
+        }
+
+        viewModel.loginState.observe(viewLifecycleOwner) { state ->
+            when(state) {
+                is Resource.Loading -> showLoading(true)
+                is Resource.Success -> navigateToHome()
+                is Resource.Error -> showError(state.message)
             }
         }
     }
 
-    private fun validateInputs(employeeCode: String, password: String): Boolean {
-        var isValid = true
+    private fun showLoading(show: Boolean) {
+        binding.progressBar.visibility = if (show) View.VISIBLE else View.GONE
+    }
 
-        if (employeeCode.isEmpty()) {
-            binding.etEmployeeCode.error = "Ingrese su código de empleado"
-            isValid = false
-        }
-
-        if (password.isEmpty()) {
-            binding.etPassword.error = "Ingrese su contraseña"
-            isValid = false
-        }
-
-        return isValid
+    private fun showError(message: String?) {
+        Toast.makeText(requireContext(), message ?: "Error desconocido", Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {

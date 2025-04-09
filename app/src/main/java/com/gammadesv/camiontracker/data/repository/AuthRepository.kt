@@ -1,17 +1,18 @@
-package com.gammadesv.camiontracker.data.repository
-
-import com.gammadesv.camiontracker.data.model.User
-import com.gammadesv.camiontracker.data.datasource.FirebaseAuthSource
-import javax.inject.Inject
-
 class AuthRepository @Inject constructor(
-    private val authSource: FirebaseAuthSource
+    private val auth: FirebaseAuth,
+    private val firestore: FirebaseFirestore
 ) {
-    suspend fun login(employeeCode: String, password: String): User {
-        return authSource.login(employeeCode, password)
+    suspend fun login(email: String, password: String): Resource<User> {
+        return try {
+            val result = auth.signInWithEmailAndPassword(email, password).await()
+            val user = result.user ?: return Resource.Error("Usuario no encontrado")
+
+            val document = firestore.collection("users").document(user.uid).get().await()
+            val userData = document.toObject(User::class.java) ?: return Resource.Error("Datos de usuario no encontrados")
+
+            Resource.Success(userData)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Error en autenticación")
+        }
     }
-
-    fun logout() = authSource.logout()
-
-    fun getCurrentUser(): User? = authSource.getCurrentUser()
 }
